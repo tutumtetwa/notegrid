@@ -6,7 +6,6 @@ import uuid
 import textwrap
 import hashlib
 from flask import Blueprint, request, jsonify
-from utils.tts_utils import generate_mp3  
 
 
 voice_bp = Blueprint('voice', __name__)
@@ -38,6 +37,17 @@ def voice():
 
     return jsonify({'audio_url': f'/static/audio/summary_{hash}.mp3'})
 
+
+
+def generate_audio(summary):
+    hash = hashlib.md5(summary.encode()).hexdigest()
+    filename = f"summary_{hash}.mp3"
+    output_path = os.path.join('static', 'audio', filename)
+
+    if not os.path.exists(output_path):
+        generate_mp3(summary, output_path)
+
+    return output_path, filename
 
 
 def generate_mp3(text, output_path):
